@@ -1,0 +1,64 @@
+@echo off
+Title Locking-Check
+color 0e
+mode 50,20
+
+:Check
+echo.
+echo %date% %time% %username% %password%
+echo.
+echo what is your name..!
+echo.
+SET /P A=
+if %A%==zohaib goto Menu
+if not %A%==zohaib echo You Don't Have sufficient Rights, Contact Admin. & @pause
+cls
+goto Check
+
+:Menu
+echo.
+cls
+echo %time%
+echo.
+echo Kindly Select Desire option from below.
+echo.
+echo Type "1" for Un-Locking Important Folders.
+echo Type "0" for Locking Important Folders.
+echo Type "Close" for exit current session.
+echo.
+SET /P B= 
+If %B%==1 goto Unlock
+if %B%==0 goto Lock
+if %B%==Close goto BYE
+if not %B%==1 @pause & goto Wrong
+if not %B%==0 @pause & goto Wrong
+if not %B%==Close @pause & goto Wrong
+
+:lock
+cls
+start cmd /q /v:on /s /c cacls C:\Users\zohaib.ahmed\Desktop\Zohaib_Lock /E /D zohaib.ahmed
+echo.
+echo Folder Locked at %date% %time% >> C:\Users\zohaib.ahmed\Desktop\Log.cl
+@pause
+exit
+
+:Unlock
+cls
+start cmd /q /v:on /c cacls C:\Users\muhammad.hassan\Desktop\Zohaib_Lock /E /G zohaib.ahmed:F
+echo.
+echo Folder Un-Lock at %date% %time% >> C:\Users\zohaib.ahmed\Desktop\Log.cl
+@pause
+exit
+
+:BYE
+cls
+echo.
+echo Bye Bye, Mr. Zohaib.
+ping localhost -n 3 >nul
+exit
+
+:Wrong
+echo.
+echo Your Selection is not an option, Kindly try again.
+echo else Close the current session from main menu.
+goto Menu

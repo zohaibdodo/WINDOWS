@@ -1,0 +1,32 @@
+To set this NIC to DHCP, we can use the Set-NetIpInterface command. This will remove the IP address and subnet mask.
+1	Set-NetIPInterface -InterfaceAlias 'Ethernet 2' -Dhcp Enabled
+Upon further inspection though, the default gateway is grayed out in TCP/IP properties but still remains. We have to use a different command to remove this, called Remove-NetRoute.
+1	PS> Get-NetIPAddress -InterfaceAlias 'Ethernet 2' | Remove-NetRoute
+2	 
+3	Confirm
+4	Are you sure you want to perform this action?
+5	Performing operation "Remove" on Target "NetRoute -DestinationPrefix 169.254.114.202/32 -InterfaceIndex 8 -NextHop 0.0.0.0 -Store Active"
+6	[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): a
+This sets the NIC to DHCP with no remnants of the previous default gateway.
+Setting a static IP address from DHCP ^
+When going from DHCP to static, the PowerShell cmdlets treat this as a "new" IP address, thus the use of the New-NetIpAddresscmdlet. To use this, you'll need to reference the current IP address and pipe it to New-NetIpAddress using the expected IP address, subnet mask prefix length, and default gateway.
+1	PS C:> Get-NetIpAddress -InterfaceAlias 'Ethernet 2' | New-NetIpAddress  IpAddress 192.168.1.10 -PrefixLength 24 -DefaultGateway 192.168.1.1
+2	 
+3	IPAddress : 192.168.1.10 InterfaceIndex : 8 InterfaceAlias : Ethernet 2 AddressFamily : IPv4 Type : Unicast PrefixLength : 24 PrefixOrigin : Manual SuffixOrigin : Manual AddressState : Tentative ValidLifetime : Infinite ([TimeSpan]::MaxValue) PreferredLifetime : Infinite ([TimeSpan]::MaxValue) SkipAsSource : False PolicyStore : ActiveStore
+4	 
+5	IPAddress : 192.168.1.10 InterfaceIndex : 8 InterfaceAlias : Ethernet 2 AddressFamily : IPv4 Type : Unicast PrefixLength : 24 PrefixOrigin : Manual SuffixOrigin : Manual AddressState : Invalid ValidLifetime : Infinite ([TimeSpan]::MaxValue) PreferredLifetime : Infinite ([TimeSpan]::MaxValue) SkipAsSource : False PolicyStore : PersistentStore
+Changing a static IP address ^
+To change an existing static IP address, we have to use the Set-NetIpAddress cmdlet, but it's not quite that easy. To change an existing static IP address, you should first removethe existing one and create a new one. I'll remove the current IP address and remove the default gateway.
+1	Get-NetIPAddress -InterfaceAlias 'Ethernet 2' | Remove-NetRoute
+2	Get-NetIPAddress -InterfaceAlias 'Ethernet 2' | Remove-NetIpAddress
+Once I do this, I'll then use the same technique I used above to add a new IP address.
+1	Get-NetIpAddress -InterfaceAlias 'Ethernet 2' | New-NetIpAddress ‑IpAddress 192.168.1.11 -PrefixLength 24 -DefaultGateway 192.168.1.1
+You should now see that the IP address has changed.
+1	PS C:\> Get-NetIpAddress -InterfaceAlias 'Ethernet 2'
+2	 
+3	IPAddress         : 192.168.1.11
+4	InterfaceIndex    : 8
+5	InterfaceAlias    : Ethernet 2
+6	<SNIP>
+
+From <https://4sysops.com/archives/set-an-ip-address-and-configure-dhcp-with-powershell/> 

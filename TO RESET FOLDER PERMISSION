@@ -1,0 +1,3 @@
+ICACLS * /T /Q /C /RESET.
+
+From <https://thesolving.com/server-room/how-to-reset-ntfs-permissions-with-icacls/>

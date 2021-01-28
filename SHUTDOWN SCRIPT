@@ -1,0 +1,5 @@
+Create a shortcut and following link.
+
+%windir%\System32\shutdown.exe /s /t 0
+
+From <https://www.cnet.com/how-to/how-to-quickly-shut-down-windows-10/>
