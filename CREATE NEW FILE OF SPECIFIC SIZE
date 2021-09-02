@@ -1,0 +1,5 @@
+#To create a file with name of mywork and having size of 30GB.
+
+fsutil file createnew <filename> <length>
+
+fsutil file createnew mywork 32212254720
